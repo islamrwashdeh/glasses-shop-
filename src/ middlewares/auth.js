@@ -19,8 +19,9 @@ const verifyToken = (req, res, next) => {
       if (err) {
         return res.status(401).json({ success: false, message: 'Failed to authenticate token' });
       }
-      // Extract user ID from decoded token
+      // Extract user ID and role  from decoded token
       req.userId = decoded.userId;
+      req.role = decoded.role;
      
       next();
     });
