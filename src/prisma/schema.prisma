@@ -1,0 +1,94 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id            Int           @id @default(autoincrement())
+  username      String        @db.VarChar(65)
+  email         String        @unique
+  password      String?       @db.VarChar(255)
+  role          RoleType
+  createdAt     DateTime      @default(now())               
+  updatedAt     DateTime      @updatedAt
+  shoppingBasket ShoppingBasket?
+}
+
+model Frame {
+  id          Int       @id @default(autoincrement()) 
+  name        String                                  
+  description String                                 
+  status      Status                                  
+  stock       Int                                     
+  price       Float                                   
+  currency    Currency                                
+  createdAt   DateTime  @default(now())             
+  updatedAt   DateTime  @updatedAt                    
+  shoppingBaskets ShoppingBasket[]
+}
+
+model Lens {
+  id                Int       @id @default(autoincrement()) 
+  colour            String                                 
+  description       String                              
+  prescriptionType  PrescriptionType                      
+  lensType          LensType                                
+  stock             Int                                    
+  price             Float                                
+  currency          Currency                                
+  createdAt         DateTime  @default(now())               
+  updatedAt         DateTime  @updatedAt                    
+  shoppingBaskets   ShoppingBasket[]
+}
+
+model ShoppingBasket {
+  id            Int       @id @default(autoincrement())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        Int @unique
+  frame         Frame     @relation(fields: [frameId], references: [id])
+  frameId       Int
+  lens          Lens      @relation(fields: [lensId], references: [id])
+  lensId        Int
+  totalPrice    Float
+  userCurrency  Currency
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+
+// Define enums for  users , status, prescription type, lens type, and currency
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
+enum PrescriptionType {
+  FASHION
+  SINGLE_VISION
+  VARIFOCAL
+}
+
+enum LensType {
+  CLASSIC
+  BLUE_LIGHT
+  TRANSITION
+}
+
+enum Currency {
+  USD
+  GBP
+  EUR
+  JOD
+  JPY
+}
+
+enum RoleType {
+  ADMIN
+  USER
+}
